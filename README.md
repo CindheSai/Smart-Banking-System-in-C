@@ -13,7 +13,7 @@
 
 # SecurBank — Core Banking Management System
 
-**A bank-grade, modular financial transaction engine built entirely in C.**  
+**A bank-grade, modular financial transaction engine built entirely in C.**
 Engineered with the architecture principles of real-world fintech production backends.
 
 <br/>
@@ -30,7 +30,7 @@ Engineered with the architecture principles of real-world fintech production bac
 
 <br/>
 
-[Overview](#-overview) • [Features](#-features) • [Architecture](#-system-architecture) • [Security](#-security-design) • [Screenshots](#-live-terminal-screenshots) • [Quick Start](#-quick-start) • [Roadmap](#-roadmap)
+[Overview](#-overview) &nbsp;•&nbsp; [Features](#-features) &nbsp;•&nbsp; [Architecture](#-system-architecture) &nbsp;•&nbsp; [Security](#-security-design) &nbsp;•&nbsp; [Screenshots](#-live-terminal-screenshots) &nbsp;•&nbsp; [Quick Start](#-quick-start) &nbsp;•&nbsp; [Roadmap](#-roadmap)
 
 <br/>
 
@@ -46,87 +46,97 @@ Built with **zero external dependencies** — no OpenSSL, no SQLite, no third-pa
 
 > **This is not a demo project.** Every design decision — from atomic file writes preventing crash corruption, to per-record integrity checksums detecting file tampering, to 4096-round PIN key-stretching — mirrors patterns deployed in real banking infrastructure.
 
+<br/>
+
 ### What Makes It Bank-Grade
 
-| Engineering Concern | SecurBank's Solution |
-|---|---|
-| **Data Integrity** | Per-record DJB2 checksums on every `Account` struct; verified on every DB load |
-| **Crash Safety** | Atomic `rename()` write: `accounts.tmp` → `accounts.dat` — no partial writes ever |
-| **PIN Security** | 4096-round stretch hash + per-account random salt; plaintext PIN never touches disk |
-| **Auditability** | Structured `[TIMESTAMP] [LEVEL] ACTOR ACTION TARGET DETAIL` on every single operation |
-| **Anti-Tamper** | DB magic bytes + header checksum + per-record checksum verified at startup |
-| **Session Security** | Cryptographic session tokens; 15-minute inactivity timeout; re-auth gates on financial ops |
-| **Separation of Concerns** | 9 fully decoupled modules; unidirectional layer dependencies; clean header interfaces |
-| **Input Safety** | All input: length-clamped, control-char stripped, type-validated before any processing |
+| Engineering Concern        | SecurBank's Solution                                                                      |
+|:---------------------------|:------------------------------------------------------------------------------------------|
+| **Data Integrity**         | Per-record DJB2 checksums on every `Account` struct; verified on every DB load           |
+| **Crash Safety**           | Atomic `rename()` write: `accounts.tmp` → `accounts.dat` — no partial writes ever        |
+| **PIN Security**           | 4096-round stretch hash + per-account random salt; plaintext PIN never touches disk       |
+| **Auditability**           | Structured `[TIMESTAMP] [LEVEL] ACTOR ACTION TARGET DETAIL` on every single operation    |
+| **Anti-Tamper**            | DB magic bytes + header checksum + per-record checksum verified at every startup          |
+| **Session Security**       | Cryptographic session tokens; 15-min inactivity timeout; re-auth gates on financial ops  |
+| **Separation of Concerns** | 9 fully decoupled modules; unidirectional layer dependencies; clean header interfaces     |
+| **Input Safety**           | All input: length-clamped, control-char stripped, type-validated before any processing   |
 
 ---
 
 ## ✨ Features
 
 <details>
-<summary><b>👤 User Module</b> — Full self-service banking</summary>
+<summary><b>👤 User Module</b> &nbsp;—&nbsp; Full self-service banking</summary>
 
 <br/>
 
-- **Account Registration** — Open Savings / Current / Salary accounts with full KYC data collection (name, phone, email, address)
-- **Secure Authentication** — Account ID + PIN login with session token generation and activity tracking
-- **Real-time Balance View** — Live balance with daily transaction utilization and remaining limit display
-- **Cash Deposit** — Single-transaction and daily-limit-enforced deposits with reference notes
-- **Cash Withdrawal** — PIN-gated withdrawals with live balance and daily-limit validation
-- **Fund Transfer** — Real-time account-to-account transfers: instant debit/credit with dual ledger entries
-- **Mini Statement** — Last 10 transactions retrieved from the append-only binary ledger
-- **PIN Management** — Secure PIN change with old-PIN verification, format enforcement, and trivial-PIN rejection
+| Feature                  | Description                                                                                  |
+|:-------------------------|:---------------------------------------------------------------------------------------------|
+| **Account Registration** | Open Savings / Current / Salary accounts with full KYC data collection                      |
+| **Secure Authentication**| Account ID + PIN login with session token generation and activity timestamp tracking         |
+| **Balance View**         | Live balance with daily transaction utilization and remaining daily limit display            |
+| **Cash Deposit**         | Single-transaction and daily-limit-enforced deposits with optional reference notes           |
+| **Cash Withdrawal**      | PIN-gated withdrawals with live balance and daily-limit validation before execution          |
+| **Fund Transfer**        | Real-time account-to-account transfers: instant debit/credit with dual ledger entries        |
+| **Mini Statement**       | Last 10 transactions retrieved directly from the append-only binary ledger                   |
+| **PIN Management**       | Secure PIN change with old-PIN verification, format enforcement, and trivial-PIN rejection   |
 
 </details>
 
 <details>
-<summary><b>🧑‍💼 Admin Module</b> — Full institutional control plane</summary>
+<summary><b>🧑‍💼 Admin Module</b> &nbsp;—&nbsp; Full institutional control plane</summary>
 
 <br/>
 
-- **Account Directory** — Balance-sorted, paginated view of all accounts across the system
-- **Multi-mode Search** — Lookup by Account ID, partial name match, or audit log keyword search
-- **Full Account Inspection** — Complete profile + inline mini-statement for any account in the system
-- **Account Freeze / Unfreeze** — Reversible suspension with mandatory audit trail and admin PIN confirmation
-- **Secure Account Deletion** — Hard-delete with dual confirmation gates and mandatory admin PIN re-authentication
-- **PIN Lock Reset** — Unlock PIN-locked accounts with forced temporary PIN reassignment
-- **Batch Interest Application** — Apply monthly compounded interest to all eligible accounts in one atomic operation
-- **System Analytics Dashboard** — Real-time: account counts by status/type, total AUM, cumulative deposit/withdrawal volumes
-- **Audit Log Viewer** — Tail N most recent entries or keyword-search the full structured audit history
+| Feature                       | Description                                                                             |
+|:------------------------------|:----------------------------------------------------------------------------------------|
+| **Account Directory**         | Balance-sorted, paginated view of every account across the entire system                |
+| **Multi-mode Search**         | Lookup by Account ID, partial name match, or full-text audit log keyword search         |
+| **Full Account Inspection**   | Complete KYC profile + inline mini-statement for any account in the system              |
+| **Freeze / Unfreeze**         | Reversible account suspension with mandatory audit trail and admin PIN confirmation      |
+| **Secure Account Deletion**   | Hard-delete with dual confirmation gates + mandatory admin PIN re-authentication         |
+| **PIN Lock Reset**            | Unlock PIN-locked accounts with forced temporary PIN reassignment by admin               |
+| **Batch Interest Application**| Apply monthly compounded interest to all eligible accounts in one atomic operation       |
+| **System Analytics**          | Real-time dashboard: account counts by status/type, total AUM, deposit/withdrawal sums  |
+| **Audit Log Viewer**          | Tail N most recent entries or keyword-search the full structured audit history           |
 
 </details>
 
 <details>
-<summary><b>🔐 Security Module</b> — Defense-in-depth protection</summary>
+<summary><b>🔐 Security Module</b> &nbsp;—&nbsp; Defense-in-depth protection</summary>
 
 <br/>
 
-- **PIN Hashing** — Custom 4096-round DJB2 stretch with XOR fold-mixing; per-account random 16-char salt
-- **Account Lockout** — Automatic account lock after 3 consecutive failed PIN attempts; logged as CRITICAL
-- **Session Tokens** — 32-character cryptographic random hex tokens generated on each login
-- **Inactivity Timeout** — Session auto-expires after 15 minutes; all subsequent requests rejected
-- **Re-authentication Gates** — Withdraw, transfer, and admin delete all require live PIN confirmation mid-session
-- **Record Integrity** — Every `Account` struct carries a DJB2 checksum; corrupted records rejected on load
-- **Database Header Integrity** — Magic `0x42414E4B`, version field, and header checksum protect `accounts.dat`
-- **Atomic DB Writes** — All saves: write to `.tmp` → `rename()` → `.dat`; no half-written states possible
-- **Full Input Sanitization** — All user input: length-clamped, control-chars stripped, type-validated
-- **Trivial PIN Blocklist** — `0000`, `1111`, `1234`, `123456`, etc. rejected at registration and PIN change
+| Feature                     | Description                                                                               |
+|:----------------------------|:------------------------------------------------------------------------------------------|
+| **PIN Hashing**             | 4096-round DJB2 stretch with XOR fold-mixing; unique 16-char random salt per account     |
+| **Account Lockout**         | Automatic lock after 3 consecutive failed PIN attempts; event logged as CRITICAL          |
+| **Session Tokens**          | 32-character cryptographic random hex tokens generated fresh on each login                |
+| **Inactivity Timeout**      | Session auto-expires after 15 minutes of inactivity; all subsequent requests rejected     |
+| **Re-authentication Gates** | Withdraw, transfer, and admin delete all require live PIN confirmation mid-session         |
+| **Record Integrity**        | Every `Account` struct carries a DJB2 checksum; tampered records rejected on DB load      |
+| **DB Header Integrity**     | Magic `0x42414E4B`, version field, and header checksum protect `accounts.dat`             |
+| **Atomic DB Writes**        | All saves: write to `.tmp` → `rename()` → `.dat`; no half-written states ever possible   |
+| **Input Sanitization**      | All input: length-clamped, control-chars stripped, type-validated before processing       |
+| **Trivial PIN Blocklist**   | `0000`, `1111`, `1234`, `123456`, etc. rejected at both registration and PIN change       |
 
 </details>
 
 <details>
-<summary><b>📊 Advanced System Features</b> — Production-grade infrastructure</summary>
+<summary><b>📊 Advanced Features</b> &nbsp;—&nbsp; Production-grade infrastructure</summary>
 
 <br/>
 
-- **Append-Only Ledger** — Binary transaction log; records are immutable; only `"ab"` mode writes ever occur
-- **Transaction Checksums** — Every `Transaction` struct carries its own integrity signature
-- **Interest Calculation Engine** — Type-aware monthly interest: Savings 3.5% p.a., Salary 4.0% p.a., Current 0%
-- **Daily Limit Enforcement** — Per-account-type rolling transaction caps: auto-reset at midnight per account
-- **Balance Reconciliation Fields** — Dual tracking of `total_deposited` vs `total_withdrawn` for internal audit
-- **Structured Audit Logging** — Actor, action, target, timestamp, and severity on every operation; append-only
-- **Balance-Sorted Reporting** — Admin account list: in-place selection sort by balance descending
-- **Live Analytics Engine** — Aggregated financial metrics computed live from in-memory account state
+| Feature                        | Description                                                                            |
+|:-------------------------------|:---------------------------------------------------------------------------------------|
+| **Append-Only Ledger**         | Binary transaction log; records immutable; only `"ab"` mode writes ever occur          |
+| **Transaction Checksums**      | Every `Transaction` struct carries its own independent integrity signature              |
+| **Interest Calculation**       | Type-aware monthly interest: Savings 3.5% p.a., Salary 4.0% p.a., Current 0%         |
+| **Daily Limit Enforcement**    | Per-account-type rolling transaction caps; auto-reset detected at midnight per account |
+| **Balance Reconciliation**     | Dual tracking of `total_deposited` vs `total_withdrawn` for internal audit integrity   |
+| **Structured Audit Logging**   | Actor, action, target, timestamp, and severity on every operation; strictly append-only|
+| **Balance-Sorted Reporting**   | Admin account list rendered via in-place selection sort by balance descending           |
+| **Live Analytics Engine**      | Aggregated financial metrics computed in real-time from the in-memory account array    |
 
 </details>
 
@@ -134,60 +144,65 @@ Built with **zero external dependencies** — no OpenSSL, no SQLite, no third-pa
 
 ## 🏗 System Architecture
 
-SecurBank follows a **strict 4-tier layered architecture** with enforced unidirectional dependencies — no lower layer ever imports any higher layer.
+SecurBank follows a **strict 4-tier layered architecture** with enforced unidirectional dependencies. No lower layer ever imports any higher layer.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER                       │
-│           main.c (user flows) · admin.c (control plane)    │
-├─────────────────────────────────────────────────────────────┤
-│                   BUSINESS LOGIC LAYER                      │
-│          account.c  ·  transaction.c  ·  auth.c            │
-├─────────────────────────────────────────────────────────────┤
-│                  INFRASTRUCTURE LAYER                       │
-│          database.c  ·  logger.c  ·  security.c            │
-├─────────────────────────────────────────────────────────────┤
-│                    FOUNDATION LAYER                         │
-│                         utils.c                            │
-└─────────────────────────────────────────────────────────────┘
+  ╔══════════════════════════════════════════════════════════════╗
+  ║                    PRESENTATION LAYER                       ║
+  ║         main.c  (user flows)  ·  admin.c  (control plane)  ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║                   BUSINESS LOGIC LAYER                      ║
+  ║          account.c  ·  transaction.c  ·  auth.c            ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║                  INFRASTRUCTURE LAYER                       ║
+  ║          database.c  ·  logger.c  ·  security.c            ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║                    FOUNDATION LAYER                         ║
+  ║                         utils.c                            ║
+  ╚══════════════════════════════════════════════════════════════╝
 ```
+
+<br/>
 
 ### Module Map
 
-| Module | Files | Lines | Responsibility |
-|---|---|---|---|
-| **Utils** | `utils.c / .h` | 336 | Terminal UI, safe I/O, string sanitization, timestamps, ANSI colors |
-| **Security** | `security.c / .h` | 252 | PIN hashing, salts, checksums, validators, XOR obfuscation |
-| **Logger** | `logger.c / .h` | 232 | Structured append-only audit log, system log, log reader/search |
-| **Database** | `database.c / .h` | 287 | Binary persistence, atomic writes, header and record integrity |
-| **Account** | `account.c / .h` | 643 | CRUD, deposit/withdraw/transfer, daily limits, interest calculation |
-| **Transaction** | `transaction.c / .h` | 297 | Append-only binary ledger, mini-statement reader, analytics |
-| **Auth** | `auth.c / .h` | 291 | Session lifecycle, PIN verification, re-auth gates, lockout, bootstrap |
-| **Admin** | `admin.c / .h` | 473 | Admin control panel, freeze/delete, analytics dashboard, audit viewer |
-| **Main** | `main.c` | 679 | Application entry point, menu orchestration, all user-facing flows |
+| Module          | Files                 | Lines | Responsibility                                                    |
+|:----------------|:----------------------|------:|:------------------------------------------------------------------|
+| **Utils**       | `utils.c / .h`        |   336 | Terminal UI, safe I/O, string sanitization, timestamps, colors    |
+| **Security**    | `security.c / .h`     |   252 | PIN hashing, salts, checksums, input validators, XOR obfuscation  |
+| **Logger**      | `logger.c / .h`       |   232 | Structured append-only audit log, system log, log reader/search   |
+| **Database**    | `database.c / .h`     |   287 | Binary persistence, atomic writes, header + record integrity      |
+| **Account**     | `account.c / .h`      |   643 | CRUD, deposit/withdraw/transfer, daily limits, interest engine    |
+| **Transaction** | `transaction.c / .h`  |   297 | Append-only binary ledger, mini-statement reader, analytics       |
+| **Auth**        | `auth.c / .h`         |   291 | Session lifecycle, PIN verify, re-auth gates, lockout, bootstrap  |
+| **Admin**       | `admin.c / .h`        |   473 | Admin panel, freeze/delete, analytics dashboard, audit viewer     |
+| **Main**        | `main.c`              |   679 | Application entry, menu orchestration, all user-facing flows      |
+| **Total**       |                       | **3,490** |                                                               |
 
-### Transaction Data Flow
+<br/>
+
+### Withdrawal Transaction — End-to-End Data Flow
 
 ```
-  User Input (PIN + Amount)
+  User enters PIN + Amount
           │
           ▼
-    auth_reauth()                  ← live PIN verified against stored stretched hash
+    auth_reauth()                   ←  live PIN verified against stored stretched hash
           │
           ▼
-    acct_reset_daily_if_needed()   ← midnight rollover check on daily limit counter
+    acct_reset_daily_if_needed()    ←  detects midnight rollover; resets daily counter
           │
           ▼
-    acct_withdraw()                ← validates: amount range, daily limit, balance
+    acct_withdraw()                 ←  validates: amount range · daily limit · balance
           │
           ▼
-    txn_record()                   ← Transaction struct checksummed + appended to binary ledger
+    txn_record()                    ←  Transaction struct checksummed + appended to ledger
           │
           ▼
-    db_save_accounts()             ← accounts.tmp written → atomically renamed to accounts.dat
+    db_save_accounts()              ←  accounts.tmp written → atomically renamed to .dat
           │
           ▼
-    log_audit()                    ← structured entry appended to audit.log (actor/action/target/time)
+    log_audit()                     ←  structured entry written to audit.log (actor/action/target/time)
 ```
 
 ---
@@ -197,41 +212,41 @@ SecurBank follows a **strict 4-tier layered architecture** with enforced unidire
 ```
 BankingSystem/
 │
-├── main.c                    # Entry point · menu orchestration · all user flows (679 lines)
+├── main.c                     # Entry point · menu orchestration · all user flows
 │
-├── auth.c / auth.h           # Authentication · session tokens · PIN verify · lockout
-├── account.c / account.h     # Account model · CRUD · deposit/withdraw/transfer · interest
-├── transaction.c / .h        # Append-only binary ledger · mini-statement · analytics
-├── admin.c / admin.h         # Admin control panel · freeze/delete · analytics dashboard
-├── security.c / security.h   # PIN hashing · salting · checksums · input validation
-├── database.c / database.h   # Binary file DB · atomic writes · integrity verification
-├── logger.c / logger.h       # Structured audit log · system log · log search
-├── utils.c / utils.h         # Safe I/O · terminal UI · string utils · timestamps
+├── auth.c         auth.h      # Authentication · session tokens · PIN verify · lockout
+├── account.c      account.h   # Account model · CRUD · transactions · interest engine
+├── transaction.c  transaction.h  # Append-only binary ledger · mini-statement · analytics
+├── admin.c        admin.h     # Admin control panel · freeze/delete · analytics
+├── security.c     security.h  # PIN hashing · salting · checksums · input validation
+├── database.c     database.h  # Binary file DB · atomic writes · integrity verification
+├── logger.c       logger.h    # Structured audit log · system log · log search
+├── utils.c        utils.h     # Safe I/O · terminal UI · string utils · timestamps
 │
-├── Makefile                  # Build system (GCC · -Wall -Wextra -Wpedantic -O2 -std=c99)
+├── Makefile                   # Build system (GCC · -Wall -Wextra -Wpedantic -O2)
 │
-└── data/                     # Auto-created on first run — do not commit to version control
-    ├── accounts.dat           # Binary account DB (magic-header + per-record checksums)
-    ├── transactions.log       # Append-only binary transaction ledger (immutable records)
-    ├── audit.log              # Human-readable structured audit trail (every action ever)
-    └── system.log             # System lifecycle events · errors · session boundaries
+└── data/                      # Auto-created on first run — do NOT commit to VCS
+    ├── accounts.dat            # Binary account DB  (magic-header + per-record checksums)
+    ├── transactions.log        # Append-only binary transaction ledger (immutable records)
+    ├── audit.log               # Human-readable structured audit trail (every action ever)
+    └── system.log              # System lifecycle events · errors · session boundaries
 ```
 
 ---
 
 ## 🛠 Technologies Used
 
-| Technology | Purpose |
-|---|---|
-| **C99** | Core language — chosen for system-level memory control and zero-overhead performance |
-| **GCC 13** | Compiled with `-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -O2` — strict warning discipline |
-| **GNU Make** | Build automation with `clean`, `run`, `clean_data`, and `purge` targets |
-| **Binary File I/O** | `fread` / `fwrite` for structured `Account` and `Transaction` binary records |
-| **`rename()` syscall** | Atomic database writes — crash-safe, eliminates partial file state corruption |
-| **POSIX `termios`** | Echo suppression for secure hidden PIN entry directly in terminal |
-| **Custom DJB2 Hash** | 4096-round stretched key derivation with XOR mixing — no OpenSSL dependency |
-| **Append-only `"ab"` mode** | Immutable transaction ledger — records only ever appended, never overwritten |
-| **In-memory session state** | Session tokens, timeout tracking, account cache — zero sensitive disk exposure |
+| Technology                      | Purpose                                                                             |
+|:--------------------------------|:------------------------------------------------------------------------------------|
+| **C99**                         | Core language — system-level memory control, zero-overhead performance              |
+| **GCC 13**                      | `-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -O2` — strict warning discipline     |
+| **GNU Make**                    | Build automation with `clean`, `run`, `clean_data`, and `purge` targets             |
+| **Binary File I/O**             | `fread` / `fwrite` for structured `Account` and `Transaction` binary records        |
+| **`rename()` syscall**          | Atomic database writes — crash-safe, eliminates all partial file state corruption   |
+| **POSIX `termios`**             | Echo suppression for secure hidden PIN entry directly in the terminal               |
+| **Custom DJB2 Hash**            | 4096-round stretched key derivation with XOR mixing — zero OpenSSL dependency       |
+| **Append-only `"ab"` mode**     | Immutable transaction ledger — records only ever appended, never overwritten        |
+| **In-memory session state**     | Session tokens, timeout tracking, account cache — zero sensitive data on disk       |
 
 > **Zero external dependencies.** The entire 3,490-line system compiles and runs with nothing but `gcc`, `make`, and a POSIX-compatible OS.
 
@@ -242,67 +257,71 @@ BankingSystem/
 ### PIN Protection Pipeline
 
 ```
-  Raw PIN entered by user  (e.g. "7291")
+  Raw PIN entered by user  →  e.g. "7291"
           │
           ▼
-  sec_generate_salt()      → 16-char random alphanumeric+symbol salt (unique per account)
+  sec_generate_salt()      →  16-char random alphanumeric+symbol salt  (unique per account)
           │
           ▼
-  sec_hash_pin()           → Constructs working string:  SALT + PIN + SALT
-          │                  Runs 4096 rounds of DJB2 stretch with round-constant XOR mixing
-          │                  Second-pass hash applied over 8-byte fold output
-          │                  Produces: 32-character lowercase hex digest
+  sec_hash_pin()           →  Builds:  SALT + PIN + SALT
+          │                   Runs 4096 rounds of DJB2 stretch + round-constant XOR mixing
+          │                   Second-pass hash applied over the 8-byte fold output
+          │                   Output:  32-character lowercase hex digest
           ▼
-  Stored in Account struct: pin_hash (32 hex chars) + pin_salt (16 chars)
-  Raw PIN zeroed from memory immediately after hashing (memset)
+  Stored: Account.pin_hash  (32 hex chars)  +  Account.pin_salt  (16 chars)
+  Raw PIN buffer zeroed from memory immediately via memset()
 ```
 
-### Database Integrity Verification
+<br/>
+
+### Database Integrity Verification Pipeline
 
 ```
-  ./securbank launched
+  ./securbank launches
           │
           ▼
-  DBHeader read            → Verify magic bytes == 0x42414E4B  ("BANK")
-          │                  Verify version == DB_VERSION (1)
-          │                  Verify header_checksum == DJB2(all header fields)
+  Read DBHeader            →  Check magic bytes  ==  0x42414E4B  ("BANK")
+          │                   Check version      ==  DB_VERSION  (1)
+          │                   Check header_checksum  ==  DJB2(all header fields)
           │
-          ▼  (fail → reject file, log CRITICAL, abort)
-          │
-          ▼
-  Per-record verification  → For each Account record:
-          │                    Zero checksum field
-          │                    Compute DJB2(sizeof(Account) bytes)
-          │                    Compare against stored checksum value
-          │
-          ▼  (mismatch → skip record, log CRITICAL, continue)
+          ▼  [fail → reject entire file · log CRITICAL · abort load]
           │
           ▼
-  Clean records only → loaded into g_accounts[] in-memory array
+  Per-record scan          →  For each Account:
+          │                     Zero the checksum field in memory
+          │                     Compute DJB2(sizeof(Account) bytes)
+          │                     Compare against the stored checksum value
+          │
+          ▼  [mismatch → skip that record · log CRITICAL · continue]
+          │
+          ▼
+  Verified records only  →  loaded into g_accounts[]  in-memory array
 ```
 
-### Complete Security Controls
+<br/>
 
-| Control | Status | Implementation Detail |
-|---|---|---|
-| PIN plaintext storage | ✅ Never | Stretch-hashed + salted; `memset` clears buffer immediately |
-| Rainbow table resistance | ✅ Active | Unique 16-char random salt generated per account at creation |
-| Brute-force resistance | ✅ Active | Hard lock after 3 failed attempts; CRITICAL audit entry written |
-| Session hijacking | ✅ Mitigated | 32-char random hex token + 15-minute inactivity expiry |
-| Privilege escalation | ✅ Prevented | `is_admin` flag verified + PIN re-auth required on every sensitive op |
-| File tampering detection | ✅ Active | DB header checksum + individual record checksum on every load |
-| Crash-safe persistence | ✅ Active | Write to `.tmp` → atomic `rename()` → `.dat`; no partial file states |
-| Input injection | ✅ Sanitized | All input: length-clamped, control-chars stripped, type-validated |
-| Trivial PIN rejection | ✅ Enforced | 15-entry blocklist checked at registration and every PIN change |
-| Audit evasion | ✅ Impossible | Every sensitive function writes audit entry before returning |
-| Admin account deletion | ✅ Blocked | `is_admin` flag check prevents self-deletion or admin account removal |
-| Transfer to self | ✅ Blocked | Explicit check: `from_id == to_id` rejected before processing |
+### Complete Security Controls Matrix
+
+| Security Control               | Status          | Implementation Detail                                                  |
+|:-------------------------------|:---------------:|:-----------------------------------------------------------------------|
+| PIN plaintext storage          | ✅ **Never**    | Stretch-hashed + salted; `memset` clears raw PIN buffer immediately    |
+| Rainbow table resistance       | ✅ **Active**   | Unique 16-char random salt generated per account at creation time      |
+| Brute-force resistance         | ✅ **Active**   | Hard lock after 3 failed attempts; CRITICAL audit entry written        |
+| Session hijacking              | ✅ **Mitigated**| 32-char random hex token + 15-minute inactivity auto-expiry            |
+| Privilege escalation           | ✅ **Prevented**| `is_admin` flag verified + PIN re-auth required on every sensitive op  |
+| File tampering detection       | ✅ **Active**   | DB header checksum + individual record checksum verified on every load |
+| Crash-safe persistence         | ✅ **Active**   | Write to `.tmp` → atomic `rename()` → `.dat`; no partial states        |
+| Input injection                | ✅ **Sanitized**| All input: length-clamped, control-chars stripped, type-validated      |
+| Trivial PIN rejection          | ✅ **Enforced** | 15-entry blocklist checked at registration and every PIN change         |
+| Audit evasion                  | ✅ **Impossible**| Every sensitive function writes audit entry before returning           |
+| Admin account deletion         | ✅ **Blocked**  | `is_admin` flag check prevents self-deletion or admin account removal  |
+| Transfer to self               | ✅ **Blocked**  | Explicit `from_id == to_id` check rejected before any processing       |
 
 ---
 
 ## 🖥 Live Terminal Screenshots
 
-> **100% real output.** Every screenshot below was captured from an actual live SecurBank session running on Ubuntu Linux. No mockups.
+> **100% real output.** Every screenshot below was captured from an actual live SecurBank session running on Ubuntu Linux 24.04. No mockups, no fabrications.
 
 ---
 
@@ -328,7 +347,7 @@ BankingSystem/
 
 ---
 
-### 2 · Account Registration — Full KYC Flow
+### 2 · New Account Registration — Full KYC Flow
 
 ```
   ╔══════════════════════════════════════════════════════╗
@@ -336,8 +355,9 @@ BankingSystem/
   ╚══════════════════════════════════════════════════════╝
 
   ┌─────────────────────────────────────────────────────┐
-  │  OPEN NEW ACCOUNT                                     │
+  │  OPEN NEW ACCOUNT                                   │
   └─────────────────────────────────────────────────────┘
+
   Full Name          : Cindhe Sai Mukesh Rao
   Phone Number       : 9876543210
   Email Address      : saimukeshraocindhe@gmail.com
@@ -345,14 +365,14 @@ BankingSystem/
 
   Account Type:
     [1] Savings  (3.5% p.a. interest, daily limit INR 50000)
-    [2] Current  (No interest, daily limit INR 200000)
+    [2] Current  (No interest,        daily limit INR 200000)
     [3] Salary   (4.0% p.a. interest, daily limit INR 100000)
   Select type [1-3]: 1
 
   Initial Deposit (minimum INR 500.00): INR 25000
 
   Set PIN (4-6 digits): ****
-  Confirm PIN       : ****
+  Confirm PIN        : ****
   ──────────────────────────────────────────────────────
 
   Confirm New Account:
@@ -365,19 +385,20 @@ BankingSystem/
   ──────────────────────────────────────────────────────
   ✔  Account created successfully!
 
-  Your Account ID: SBK2634700
+  Your Account ID : SBK2634700
   Please save your Account ID. You need it to login.
   ──────────────────────────────────────────────────────
 ```
 
 ---
 
-### 3 · Secure Login — PIN Masked, Session Established
+### 3 · Secure Login — PIN Masked, Session Token Established
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  SECURE LOGIN                                         │
+  │  SECURE LOGIN                                       │
   └─────────────────────────────────────────────────────┘
+
   Account ID : SBK2634700
   PIN        : ****
   ✔  Authentication successful. Welcome!
@@ -387,8 +408,9 @@ BankingSystem/
   Available Balance: INR 25000.00
 
   ┌─────────────────────────────────────────────────────┐
-  │  USER BANKING MENU                                    │
+  │  USER BANKING MENU                                  │
   └─────────────────────────────────────────────────────┘
+
   [ 1 ]  View Profile & Account Details
   [ 2 ]  Check Balance
   [ 3 ]  Deposit Funds
@@ -407,22 +429,22 @@ BankingSystem/
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  ACCOUNT DETAILS                                      │
+  │  ACCOUNT DETAILS                                    │
   └─────────────────────────────────────────────────────┘
 
-  Account ID:            SBK2634700
-  Full Name:             Cindhe Sai Mukesh Rao
-  Phone:                 9876543210
-  Email:                 saimukeshraocindhe@gmail.com
-  Address:               42 Tech Park, Hyderabad, Telangana
-  Account Type:          Savings
-  Status:                ACTIVE
-  Balance:               INR 30000.00
-  Daily Used:            INR 40000.00
-  Total Deposited:       INR 35000.00
-  Total Withdrawn:       INR 5000.00
-  Created:               2026-06-28 05:59:07
-  Last Login:            2026-06-28 05:59:50
+  Account ID    :  SBK2634700
+  Full Name     :  Cindhe Sai Mukesh Rao
+  Phone         :  9876543210
+  Email         :  saimukeshraocindhe@gmail.com
+  Address       :  42 Tech Park, Hyderabad, Telangana
+  Account Type  :  Savings
+  Status        :  ACTIVE
+  Balance       :  INR 30000.00
+  Daily Used    :  INR 40000.00
+  Deposited     :  INR 35000.00
+  Withdrawn     :  INR 5000.00
+  Created       :  2026-06-28 05:59:07
+  Last Login    :  2026-06-28 05:59:50
 ```
 
 ---
@@ -431,10 +453,11 @@ BankingSystem/
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  DEPOSIT FUNDS                                        │
+  │  DEPOSIT FUNDS                                      │
   └─────────────────────────────────────────────────────┘
-  Enter deposit amount (INR): 10000
-  Note/Reference (optional): Salary Credit
+
+  Enter deposit amount (INR) : 10000
+  Note/Reference (optional)  : Salary Credit
 
   Confirm deposit of INR 10000.00? [y/N]: y
 
@@ -448,12 +471,13 @@ BankingSystem/
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  WITHDRAW FUNDS                                       │
+  │  WITHDRAW FUNDS                                     │
   └─────────────────────────────────────────────────────┘
-  Current Balance: INR 35000.00
-  Enter withdrawal amount (INR): 5000
-  Enter PIN to authorize: ****
-  Note/Reference (optional): ATM Withdrawal
+
+  Current Balance            :  INR 35000.00
+  Enter withdrawal amount (INR) : 5000
+  Enter PIN to authorize     :  ****
+  Note/Reference (optional)  :  ATM Withdrawal
 
   ✔  Withdrawal successful!
   New Balance: INR 30000.00
@@ -465,13 +489,14 @@ BankingSystem/
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  MINI STATEMENT — LAST 10 TRANSACTIONS              │
+  │  MINI STATEMENT — LAST 10 TRANSACTIONS             │
   └─────────────────────────────────────────────────────┘
-  TXN ID             Date         Type         Status       Amount           Note
-  ────────────────── ────────── ────────── ────────── ────────────── ──────────
-  T2026062810000     2026-06-28   Deposit      SUCCESS      25000.00         Initial account deposit
-  T2026062810000     2026-06-28   Deposit      SUCCESS      10000.00         Salary Credit
-  T2026062810001     2026-06-28   Withdraw     SUCCESS      5000.00          ATM Withdrawal
+
+  TXN ID              Date         Type       Status     Amount (INR)   Note
+  ──────────────────  ──────────   ────────   ────────   ────────────   ──────────────────────
+  T2026062810000      2026-06-28   Deposit    SUCCESS    25000.00       Initial account deposit
+  T2026062810001      2026-06-28   Deposit    SUCCESS    10000.00       Salary Credit
+  T2026062810002      2026-06-28   Withdraw   SUCCESS     5000.00       ATM Withdrawal
 ```
 
 ---
@@ -484,7 +509,7 @@ BankingSystem/
   ✔  Authentication successful. Welcome!
 
   ┌─────────────────────────────────────────────────────┐
-  │  ADMINISTRATOR CONTROL PANEL                          │
+  │  ADMINISTRATOR CONTROL PANEL                        │
   └─────────────────────────────────────────────────────┘
 
   [ 1 ]  View All Accounts
@@ -509,25 +534,28 @@ BankingSystem/
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  SYSTEM ANALYTICS                                     │
+  │  SYSTEM ANALYTICS                                   │
   └─────────────────────────────────────────────────────┘
 
   Account Status Distribution
-  Total Accounts:           1
-  Active:                   1
-  Frozen:                   0
-  Locked:                   0
-  Closed:                   0
+  ──────────────────────────────────────────────────────
+  Total Accounts    :   1
+  Active            :   1
+  Frozen            :   0
+  Locked            :   0
+  Closed            :   0
 
   Account Type Distribution
-  Savings:                  1
-  Current:                  0
-  Salary:                   0
+  ──────────────────────────────────────────────────────
+  Savings           :   1
+  Current           :   0
+  Salary            :   0
 
   Financial Summary
-  Total Funds in System:    INR 30000.00
-  Total Deposited:          INR 35000.00
-  Total Withdrawn:          INR 5000.00
+  ──────────────────────────────────────────────────────
+  Total Funds in System   :   INR 30000.00
+  Total Deposited         :   INR 35000.00
+  Total Withdrawn         :   INR  5000.00
 ```
 
 ---
@@ -536,26 +564,27 @@ BankingSystem/
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  ALL ACCOUNTS (2 total)                               │
+  │  ALL ACCOUNTS  (2 total)                            │
   └─────────────────────────────────────────────────────┘
-  Account ID   Name                   Type       Status       Balance        Phone
-  ──────────   ──────────────────     ────────   ──────────   ──────────     ───────────
-  SBK2634700   Cindhe Sai Mukesh Rao  Savings    ACTIVE       INR 30000.00   9876543210
-  ADMIN001     System Administrator   Current    ACTIVE       INR 0.00       0000000000
+
+  Account ID    Name                   Type      Status   Balance        Phone
+  ──────────    ─────────────────────  ───────   ──────   ───────────    ──────────
+  SBK2634700    Cindhe Sai Mukesh Rao  Savings   ACTIVE   INR 30000.00   9876543210
+  ADMIN001      System Administrator   Current   ACTIVE   INR     0.00   0000000000
 ```
 
 ---
 
-### 11 · Security: Wrong PIN → Automatic Account Lockout
+### 11 · Security — Wrong PIN → Automatic Account Lockout
 
 ```
   Account ID : SBK2634700
   PIN        : ******
-  ✘  ERROR: Incorrect PIN. Please try again.
+  ✘  ERROR: Incorrect PIN. Please try again.          [Attempt 1 / 3]
 
   Account ID : SBK2634700
   PIN        : ******
-  ✘  ERROR: Incorrect PIN. Please try again.
+  ✘  ERROR: Incorrect PIN. Please try again.          [Attempt 2 / 3]
 
   Account ID : SBK2634700
   PIN        : ******
@@ -569,31 +598,31 @@ BankingSystem/
 
 ```
 === SESSION START: 2026-06-28 05:59:01 ===
-[2026-06-28 05:59:01] [AUDIT   ] ACTOR=SYSTEM           ACTION=ACCOUNT_CREATED    TARGET=ADMIN001     DETAIL=System Administrator
-[2026-06-28 05:59:07] [AUDIT   ] ACTOR=SYSTEM           ACTION=ACCOUNT_CREATED    TARGET=SBK2634700   DETAIL=Cindhe Sai Mukesh Rao
-[2026-06-28 05:59:07] [AUDIT   ] ACTOR=SBK2634700       ACTION=DEPOSIT            TARGET=SBK2634700   DETAIL=Initial account deposit
-=== SESSION END: 2026-06-28 05:59:12 ===
+[2026-06-28 05:59:01] [AUDIT] ACTOR=SYSTEM       ACTION=ACCOUNT_CREATED     TARGET=ADMIN001    DETAIL=System Administrator
+[2026-06-28 05:59:07] [AUDIT] ACTOR=SYSTEM       ACTION=ACCOUNT_CREATED     TARGET=SBK2634700  DETAIL=Cindhe Sai Mukesh Rao
+[2026-06-28 05:59:07] [AUDIT] ACTOR=SBK2634700   ACTION=DEPOSIT             TARGET=SBK2634700  DETAIL=Initial account deposit
+=== SESSION END:   2026-06-28 05:59:12 ===
 
 === SESSION START: 2026-06-28 05:59:24 ===
-[2026-06-28 05:59:26] [AUDIT   ] ACTOR=SBK2634700       ACTION=LOGIN_SUCCESS       TARGET=SBK2634700   DETAIL=User login
-[2026-06-28 05:59:30] [AUDIT   ] ACTOR=SBK2634700       ACTION=DEPOSIT             TARGET=SBK2634700   DETAIL=Salary Credit
-[2026-06-28 05:59:34] [AUDIT   ] ACTOR=SBK2634700       ACTION=WITHDRAWAL          TARGET=SBK2634700   DETAIL=ATM Withdrawal
-[2026-06-28 05:59:38] [AUDIT   ] ACTOR=SBK2634700       ACTION=LOGOUT              TARGET=SBK2634700   DETAIL=
-=== SESSION END: 2026-06-28 05:59:38 ===
+[2026-06-28 05:59:26] [AUDIT] ACTOR=SBK2634700   ACTION=LOGIN_SUCCESS        TARGET=SBK2634700  DETAIL=User login
+[2026-06-28 05:59:30] [AUDIT] ACTOR=SBK2634700   ACTION=DEPOSIT              TARGET=SBK2634700  DETAIL=Salary Credit
+[2026-06-28 05:59:34] [AUDIT] ACTOR=SBK2634700   ACTION=WITHDRAWAL           TARGET=SBK2634700  DETAIL=ATM Withdrawal
+[2026-06-28 05:59:38] [AUDIT] ACTOR=SBK2634700   ACTION=LOGOUT               TARGET=SBK2634700  DETAIL=
+=== SESSION END:   2026-06-28 05:59:38 ===
 
 === SESSION START: 2026-06-28 06:00:08 ===
-[2026-06-28 06:00:10] [AUDIT   ] ACTOR=ADMIN001         ACTION=LOGIN_SUCCESS       TARGET=ADMIN001     DETAIL=Admin login
-[2026-06-28 06:00:11] [AUDIT   ] ACTOR=ADMIN001         ACTION=ADMIN_ANALYTICS     TARGET=             DETAIL=
-[2026-06-28 06:00:12] [AUDIT   ] ACTOR=ADMIN001         ACTION=ADMIN_LIST_ACCOUNTS TARGET=             DETAIL=
-[2026-06-28 06:00:14] [AUDIT   ] ACTOR=ADMIN001         ACTION=LOGOUT              TARGET=ADMIN001     DETAIL=
-=== SESSION END: 2026-06-28 06:00:18 ===
+[2026-06-28 06:00:10] [AUDIT] ACTOR=ADMIN001     ACTION=LOGIN_SUCCESS        TARGET=ADMIN001    DETAIL=Admin login
+[2026-06-28 06:00:11] [AUDIT] ACTOR=ADMIN001     ACTION=ADMIN_ANALYTICS      TARGET=—           DETAIL=
+[2026-06-28 06:00:12] [AUDIT] ACTOR=ADMIN001     ACTION=ADMIN_LIST_ACCOUNTS  TARGET=—           DETAIL=
+[2026-06-28 06:00:14] [AUDIT] ACTOR=ADMIN001     ACTION=LOGOUT               TARGET=ADMIN001    DETAIL=
+=== SESSION END:   2026-06-28 06:00:18 ===
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Step 1 — Prerequisites
 
 ```bash
 # Ubuntu / Debian / WSL2
@@ -609,52 +638,66 @@ xcode-select --install
 gcc --version && make --version
 ```
 
-### Option A — Self-Extracting Installer (Recommended)
+<br/>
 
-Download `build_securbank.sh` — a single script with all 18 source files embedded inside:
+### Step 2 — Get the Code
+
+**Option A — Self-Extracting Installer** *(recommended — single file, no git required)*
+
+Download `build_securbank.sh` — one script with all 18 source files embedded inside:
 
 ```bash
 chmod +x build_securbank.sh
 bash build_securbank.sh
-cd BankingSystem
-./securbank
 ```
 
-The script will automatically:
-1. Verify `gcc` and `make` are available
-2. Create the `BankingSystem/` directory structure
-3. Extract all 18 source and header files
-4. Compile with `-Wall -Wextra -O2 -std=c99 -lm`
-5. Print run instructions with default credentials
+The installer will:
 
-### Option B — Manual Build from Source
+```
+[1/5]  Check for gcc and make
+[2/5]  Create BankingSystem/ directory structure
+[3/5]  Extract all 18 source and header files
+[4/5]  Compile with -Wall -Wextra -O2 -std=c99 -lm
+[5/5]  Print run instructions with default credentials
+```
+
+**Option B — Clone from GitHub**
 
 ```bash
 git clone https://github.com/CindheSai/securbank.git
 cd securbank/BankingSystem
-
-# Build using Makefile (recommended)
 make
+```
 
-# Or compile manually with a single GCC command
+**Option C — Manual GCC command**
+
+```bash
 gcc -Wall -Wextra -O2 -std=c99 \
     main.c utils.c security.c logger.c database.c \
     account.c transaction.c auth.c admin.c \
     -lm -o securbank
+```
 
-# Launch
+<br/>
+
+### Step 3 — Run
+
+```bash
+cd BankingSystem
 ./securbank
 ```
 
+<br/>
+
 ### Makefile Targets
 
-```bash
-make              # Compile the binary
-make run          # Compile and run immediately
-make clean        # Remove all .o files and binary
-make clean_data   # Wipe the data/ directory (completely fresh database)
-make purge        # Remove binary, objects, and all data files
-```
+| Target            | Action                                                  |
+|:------------------|:--------------------------------------------------------|
+| `make`            | Compile the binary                                      |
+| `make run`        | Compile and run immediately                             |
+| `make clean`      | Remove all `.o` object files and the binary             |
+| `make clean_data` | Wipe the `data/` directory — completely fresh database  |
+| `make purge`      | Remove binary, objects, and all data files              |
 
 ---
 
@@ -663,56 +706,62 @@ make purge        # Remove binary, objects, and all data files
 ### Default Admin Credentials
 
 ```
-Account ID : ADMIN001
-PIN        : 000000
+  Account ID :  ADMIN001
+  PIN        :  000000
 ```
 
-> ⚠️ Change the admin PIN immediately on first login.
+> ⚠️ **Change the admin PIN immediately on first login.**
+
+<br/>
 
 ### Creating Your First Account
 
 ```
 Main Menu → [ 2 ] Open New Account
 
-  Full Name    : Your Full Name             (letters, spaces, dots, hyphens)
-  Phone        : 10-digit number
-  Email        : valid@email.com
-  Address      : Your address
-  Account Type : 1 Savings / 2 Current / 3 Salary
-  Deposit      : Minimum INR 500
-  PIN          : 4–6 digits (no trivial sequences: 1234, 0000, 1111...)
+  Full Name     →  Your full name (letters, spaces, dots, hyphens)
+  Phone         →  10-digit mobile number
+  Email         →  valid@email.com
+  Address       →  Your address
+  Account Type  →  1 = Savings   2 = Current   3 = Salary
+  Deposit       →  Minimum INR 500
+  PIN           →  4–6 digits  (avoid trivial: 1234, 0000, 1111, 123456)
 ```
 
-**Save the Account ID printed on screen** — it is your permanent login identifier.
+> 📌 **Save the Account ID printed on screen** — it is your permanent login identifier.
+
+<br/>
 
 ### Transaction Limits by Account Type
 
-| Account Type | Daily Limit | Interest Rate | Use Case |
-|---|---|---|---|
-| 💰 Savings | ₹50,000 / day | 3.5% p.a. monthly | Personal savings and investments |
-| 🏢 Current | ₹2,00,000 / day | 0% | Business transactions, high volume |
-| 💼 Salary | ₹1,00,000 / day | 4.0% p.a. monthly | Employee salary disbursement |
+| Account Type     | Daily Limit       | Interest Rate     | Primary Use Case                        |
+|:-----------------|:-----------------:|:-----------------:|:----------------------------------------|
+| 💰 Savings       | ₹ 50,000 / day   | 3.5% p.a.         | Personal savings and investments        |
+| 🏢 Current       | ₹ 2,00,000 / day | 0%                | Business transactions, high volume      |
+| 💼 Salary        | ₹ 1,00,000 / day | 4.0% p.a.         | Employee salary disbursement accounts   |
 
-### Data Files
+<br/>
 
-| File | Format | Contents |
-|---|---|---|
-| `data/accounts.dat` | Binary | `DBHeader` + `Account[]` with per-record checksums |
-| `data/transactions.log` | Binary | Append-only immutable `Transaction[]` ledger |
-| `data/audit.log` | Plaintext | Structured audit trail — every action, timestamped |
-| `data/system.log` | Plaintext | System lifecycle events, errors, session markers |
+### Data Files Reference
+
+| File                   | Format    | Contents                                                      |
+|:-----------------------|:----------|:--------------------------------------------------------------|
+| `data/accounts.dat`    | Binary    | `DBHeader` + `Account[]` array with per-record checksums      |
+| `data/transactions.log`| Binary    | Append-only immutable `Transaction[]` ledger records          |
+| `data/audit.log`       | Plaintext | Structured audit trail — every action, actor, and timestamp   |
+| `data/system.log`      | Plaintext | System lifecycle events, errors, and session boundaries       |
 
 ```bash
-# View the live audit trail
+# View the complete audit trail
 cat data/audit.log
 
-# Follow in real-time during an active session
+# Follow the audit log live during an active session
 tail -f data/audit.log
 
 # Find all operations on a specific account
 grep "SBK2634700" data/audit.log
 
-# Find all admin actions
+# Find all admin actions taken
 grep "ADMIN001" data/audit.log
 ```
 
@@ -721,23 +770,32 @@ grep "ADMIN001" data/audit.log
 ## 🗺 Roadmap
 
 ### v1.1 — Planned
-- [ ] **OTP Simulation** — TOTP-style time-based one-time code for high-value transactions
-- [ ] **Statement Export** — CSV / plaintext export of full transaction history from the binary ledger
-- [ ] **Multi-currency Support** — USD, EUR, INR account balances with live rate-based conversion
-- [ ] **Loan Module** — Simple loan origination, EMI schedule generation, and repayment ledger
+
+| Feature                    | Description                                                               |
+|:---------------------------|:--------------------------------------------------------------------------|
+| **OTP Simulation**         | TOTP-style time-based one-time code for high-value transaction approval   |
+| **Statement Export**       | CSV / plaintext export of full transaction history from the binary ledger |
+| **Multi-currency Support** | USD, EUR, INR balances with live rate-based conversion between accounts   |
+| **Loan Module**            | Loan origination, EMI schedule generation, and repayment ledger tracking  |
 
 ### v2.0 — In Research
-- [ ] **SQLite Integration** — Replace binary file DB with embedded relational storage engine
-- [ ] **AI Fraud Detection** — Statistical transaction anomaly detection using Z-score and velocity checks
-- [ ] **REST API Layer** — HTTP interface via lightweight C server (`libmicrohttpd`) for frontend integration
-- [ ] **ncurses GUI** — Full terminal UI with panels, windows, color themes, and keyboard navigation
-- [ ] **Multi-user Concurrency** — POSIX file locking (`flock`) for simultaneous multi-session support
+
+| Feature                    | Description                                                               |
+|:---------------------------|:--------------------------------------------------------------------------|
+| **SQLite Integration**     | Replace binary file DB with a full embedded relational storage engine     |
+| **AI Fraud Detection**     | Statistical anomaly detection using Z-score analysis and velocity checks  |
+| **REST API Layer**         | HTTP interface via `libmicrohttpd` for web/mobile frontend integration    |
+| **ncurses GUI**            | Full terminal UI with panels, windows, color themes, keyboard navigation  |
+| **Multi-user Concurrency** | POSIX `flock()` file locking for simultaneous multi-session support       |
 
 ### v3.0 — Conceptual
-- [ ] **Microservice Decomposition** — Split auth, account, and transaction modules into independent networked C services
-- [ ] **HSM Simulation** — Hardware Security Module emulation for cryptographic key lifecycle management
-- [ ] **Blockchain Audit Trail** — Hash-chained immutable log where each entry references the previous entry's hash
-- [ ] **Mobile Frontend** — React Native app communicating with the v2.0 REST API over HTTPS
+
+| Feature                      | Description                                                             |
+|:-----------------------------|:------------------------------------------------------------------------|
+| **Microservice Decomposition** | Auth, account, and transaction modules as independent networked services|
+| **HSM Simulation**           | Hardware Security Module emulation for cryptographic key lifecycle      |
+| **Blockchain Audit Trail**   | Hash-chained immutable log; each entry references the previous hash     |
+| **Mobile Frontend**          | React Native app communicating with the v2.0 REST API over HTTPS        |
 
 ---
 
@@ -746,28 +804,33 @@ grep "ADMIN001" data/audit.log
 Contributions from systems engineers, security researchers, and C programmers are welcome.
 
 ```bash
-# Fork → Clone → Branch
+# 1. Fork and clone
 git clone https://github.com/CindheSai/securbank.git
 cd securbank
+
+# 2. Create a feature branch
 git checkout -b feature/your-feature-name
 
-# Make your changes — verify zero new warnings
+# 3. Make changes — verify zero new warnings
 make clean && make
 
-# Commit descriptively
-git commit -m "feat(module): short description of what and why"
+# 4. Commit descriptively
+git commit -m "feat(module): concise description of what and why"
 
-# Push and open a Pull Request
+# 5. Push and open a Pull Request
 git push origin feature/your-feature-name
 ```
 
 **Code Standards:**
-- C99 compliant, POSIX-compatible
-- Zero GCC warnings under `-Wall -Wextra -Wpedantic -Wformat=2`
-- Every public function must be declared in its module's `.h` header
-- Every security-sensitive operation must emit an audit log entry before returning
-- New features must not break `make clean && make`
-- No external library dependencies — standard C library only
+
+| Requirement                | Detail                                                              |
+|:---------------------------|:--------------------------------------------------------------------|
+| Language standard          | C99 compliant, POSIX-compatible                                     |
+| Warning discipline         | Zero warnings under `-Wall -Wextra -Wpedantic -Wformat=2`           |
+| Header discipline          | Every public function declared in its module's `.h` file            |
+| Audit discipline           | Every security-sensitive op writes an audit entry before returning  |
+| Build requirement          | `make clean && make` must succeed with zero errors after your change|
+| Dependency policy          | No external libraries — C standard library only                     |
 
 ---
 
@@ -805,9 +868,9 @@ SOFTWARE.
 
 <br/>
 
-**Cindhe Sai Mukesh Rao**
+### Cindhe Sai Mukesh Rao
 
-*Systems Engineer · Backend Developer · Fintech Enthusiast*
+*Systems Engineer &nbsp;·&nbsp; Backend Developer &nbsp;·&nbsp; Fintech Enthusiast*
 
 <br/>
 
@@ -823,15 +886,17 @@ SOFTWARE.
 
 <div align="center">
 
-**SecurBank** — Because financial systems deserve better than shortcuts.
+**SecurBank** &nbsp;—&nbsp; Because financial systems deserve better than shortcuts.
 
 <br/>
 
-*3,490 lines of pure C · 9 decoupled modules · Zero external dependencies · Bank-grade security*
+```
+3,490 lines of pure C  ·  9 decoupled modules  ·  Zero external dependencies  ·  Bank-grade security
+```
 
 <br/>
 
-⭐ **Star this repository** if it helped you understand production-grade systems design in C.
+⭐ &nbsp;**Star this repository** if it helped you understand production-grade systems design in C.
 
 <br/>
 
