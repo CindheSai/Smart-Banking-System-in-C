@@ -52,14 +52,14 @@ Built with **zero external dependencies** — no OpenSSL, no SQLite, no third-pa
 
 | Engineering Concern        | SecurBank's Solution                                                                      |
 |:---------------------------|:------------------------------------------------------------------------------------------|
-| **Data Integrity**         | Per-record DJB2 checksums on every `Account` struct; verified on every DB load           |
-| **Crash Safety**           | Atomic `rename()` write: `accounts.tmp` → `accounts.dat` — no partial writes ever        |
+| **Data Integrity**         | Per-record DJB2 checksums on every `Account` struct; verified on every DB load            |
+| **Crash Safety**           | Atomic `rename()` write: `accounts.tmp` → `accounts.dat` — no partial writes ever         |
 | **PIN Security**           | 4096-round stretch hash + per-account random salt; plaintext PIN never touches disk       |
-| **Auditability**           | Structured `[TIMESTAMP] [LEVEL] ACTOR ACTION TARGET DETAIL` on every single operation    |
+| **Auditability**           | Structured `[TIMESTAMP] [LEVEL] ACTOR ACTION TARGET DETAIL` on every single operation     |
 | **Anti-Tamper**            | DB magic bytes + header checksum + per-record checksum verified at every startup          |
-| **Session Security**       | Cryptographic session tokens; 15-min inactivity timeout; re-auth gates on financial ops  |
+| **Session Security**       | Cryptographic session tokens; 15-min inactivity timeout; re-auth gates on financial ops   |
 | **Separation of Concerns** | 9 fully decoupled modules; unidirectional layer dependencies; clean header interfaces     |
-| **Input Safety**           | All input: length-clamped, control-char stripped, type-validated before any processing   |
+| **Input Safety**           | All input: length-clamped, control-char stripped, type-validated before any processing    |
 
 ---
 
@@ -72,7 +72,7 @@ Built with **zero external dependencies** — no OpenSSL, no SQLite, no third-pa
 
 | Feature                  | Description                                                                                  |
 |:-------------------------|:---------------------------------------------------------------------------------------------|
-| **Account Registration** | Open Savings / Current / Salary accounts with full KYC data collection                      |
+| **Account Registration** | Open Savings / Current / Salary accounts with full KYC data collection                       |
 | **Secure Authentication**| Account ID + PIN login with session token generation and activity timestamp tracking         |
 | **Balance View**         | Live balance with daily transaction utilization and remaining daily limit display            |
 | **Cash Deposit**         | Single-transaction and daily-limit-enforced deposits with optional reference notes           |
@@ -88,16 +88,16 @@ Built with **zero external dependencies** — no OpenSSL, no SQLite, no third-pa
 
 <br/>
 
-| Feature                       | Description                                                                             |
-|:------------------------------|:----------------------------------------------------------------------------------------|
-| **Account Directory**         | Balance-sorted, paginated view of every account across the entire system                |
-| **Multi-mode Search**         | Lookup by Account ID, partial name match, or full-text audit log keyword search         |
-| **Full Account Inspection**   | Complete KYC profile + inline mini-statement for any account in the system              |
+| Feature                       | Description                                                                              |
+|:------------------------------|:-----------------------------------------------------------------------------------------|
+| **Account Directory**         | Balance-sorted, paginated view of every account across the entire system                 |
+| **Multi-mode Search**         | Lookup by Account ID, partial name match, or full-text audit log keyword search          |
+| **Full Account Inspection**   | Complete KYC profile + inline mini-statement for any account in the system               |
 | **Freeze / Unfreeze**         | Reversible account suspension with mandatory audit trail and admin PIN confirmation      |
 | **Secure Account Deletion**   | Hard-delete with dual confirmation gates + mandatory admin PIN re-authentication         |
 | **PIN Lock Reset**            | Unlock PIN-locked accounts with forced temporary PIN reassignment by admin               |
 | **Batch Interest Application**| Apply monthly compounded interest to all eligible accounts in one atomic operation       |
-| **System Analytics**          | Real-time dashboard: account counts by status/type, total AUM, deposit/withdrawal sums  |
+| **System Analytics**          | Real-time dashboard: account counts by status/type, total AUM, deposit/withdrawal sums   |
 | **Audit Log Viewer**          | Tail N most recent entries or keyword-search the full structured audit history           |
 
 </details>
@@ -109,14 +109,14 @@ Built with **zero external dependencies** — no OpenSSL, no SQLite, no third-pa
 
 | Feature                     | Description                                                                               |
 |:----------------------------|:------------------------------------------------------------------------------------------|
-| **PIN Hashing**             | 4096-round DJB2 stretch with XOR fold-mixing; unique 16-char random salt per account     |
+| **PIN Hashing**             | 4096-round DJB2 stretch with XOR fold-mixing; unique 16-char random salt per account      |
 | **Account Lockout**         | Automatic lock after 3 consecutive failed PIN attempts; event logged as CRITICAL          |
 | **Session Tokens**          | 32-character cryptographic random hex tokens generated fresh on each login                |
 | **Inactivity Timeout**      | Session auto-expires after 15 minutes of inactivity; all subsequent requests rejected     |
-| **Re-authentication Gates** | Withdraw, transfer, and admin delete all require live PIN confirmation mid-session         |
+| **Re-authentication Gates** | Withdraw, transfer, and admin delete all require live PIN confirmation mid-session        |
 | **Record Integrity**        | Every `Account` struct carries a DJB2 checksum; tampered records rejected on DB load      |
 | **DB Header Integrity**     | Magic `0x42414E4B`, version field, and header checksum protect `accounts.dat`             |
-| **Atomic DB Writes**        | All saves: write to `.tmp` → `rename()` → `.dat`; no half-written states ever possible   |
+| **Atomic DB Writes**        | All saves: write to `.tmp` → `rename()` → `.dat`; no half-written states ever possible    |
 | **Input Sanitization**      | All input: length-clamped, control-chars stripped, type-validated before processing       |
 | **Trivial PIN Blocklist**   | `0000`, `1111`, `1234`, `123456`, etc. rejected at both registration and PIN change       |
 
@@ -127,16 +127,16 @@ Built with **zero external dependencies** — no OpenSSL, no SQLite, no third-pa
 
 <br/>
 
-| Feature                        | Description                                                                            |
-|:-------------------------------|:---------------------------------------------------------------------------------------|
-| **Append-Only Ledger**         | Binary transaction log; records immutable; only `"ab"` mode writes ever occur          |
-| **Transaction Checksums**      | Every `Transaction` struct carries its own independent integrity signature              |
-| **Interest Calculation**       | Type-aware monthly interest: Savings 3.5% p.a., Salary 4.0% p.a., Current 0%         |
-| **Daily Limit Enforcement**    | Per-account-type rolling transaction caps; auto-reset detected at midnight per account |
-| **Balance Reconciliation**     | Dual tracking of `total_deposited` vs `total_withdrawn` for internal audit integrity   |
-| **Structured Audit Logging**   | Actor, action, target, timestamp, and severity on every operation; strictly append-only|
-| **Balance-Sorted Reporting**   | Admin account list rendered via in-place selection sort by balance descending           |
-| **Live Analytics Engine**      | Aggregated financial metrics computed in real-time from the in-memory account array    |
+| Feature                        | Description                                                                              |
+|:-------------------------------|:-----------------------------------------------------------------------------------------|
+| **Append-Only Ledger**         | Binary transaction log; records immutable; only `"ab"` mode writes ever occur            |
+| **Transaction Checksums**      | Every `Transaction` struct carries its own independent integrity signature               |
+| **Interest Calculation**       | Type-aware monthly interest: Savings 3.5% p.a., Salary 4.0% p.a., Current 0%             |
+| **Daily Limit Enforcement**    | Per-account-type rolling transaction caps; auto-reset detected at midnight per account   |
+| **Balance Reconciliation**     | Dual tracking of `total_deposited` vs `total_withdrawn` for internal audit integrity     |
+| **Structured Audit Logging**   | Actor, action, target, timestamp, and severity on every operation; strictly append-only  |
+| **Balance-Sorted Reporting**   | Admin account list rendered via in-place selection sort by balance descending            |
+| **Live Analytics Engine**      | Aggregated financial metrics computed in real-time from the in-memory account array      |
 
 </details>
 
@@ -148,17 +148,17 @@ SecurBank follows a **strict 4-tier layered architecture** with enforced unidire
 
 ```
   ╔══════════════════════════════════════════════════════════════╗
-  ║                    PRESENTATION LAYER                       ║
-  ║         main.c  (user flows)  ·  admin.c  (control plane)  ║
+  ║                    PRESENTATION LAYER                        ║
+  ║         main.c  (user flows)  ·  admin.c  (control plane)    ║
   ╠══════════════════════════════════════════════════════════════╣
-  ║                   BUSINESS LOGIC LAYER                      ║
-  ║          account.c  ·  transaction.c  ·  auth.c            ║
+  ║                   BUSINESS LOGIC LAYER                       ║
+  ║          account.c  ·  transaction.c  ·  auth.c              ║
   ╠══════════════════════════════════════════════════════════════╣
-  ║                  INFRASTRUCTURE LAYER                       ║
-  ║          database.c  ·  logger.c  ·  security.c            ║
+  ║                  INFRASTRUCTURE LAYER                        ║
+  ║          database.c  ·  logger.c  ·  security.c              ║
   ╠══════════════════════════════════════════════════════════════╣
-  ║                    FOUNDATION LAYER                         ║
-  ║                         utils.c                            ║
+  ║                    FOUNDATION LAYER                          ║
+  ║                         utils.c                              ║
   ╚══════════════════════════════════════════════════════════════╝
 ```
 
@@ -239,7 +239,7 @@ BankingSystem/
 | Technology                      | Purpose                                                                             |
 |:--------------------------------|:------------------------------------------------------------------------------------|
 | **C99**                         | Core language — system-level memory control, zero-overhead performance              |
-| **GCC 13**                      | `-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -O2` — strict warning discipline     |
+| **GCC 13**                      | `-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -O2` — strict warning discipline      |
 | **GNU Make**                    | Build automation with `clean`, `run`, `clean_data`, and `purge` targets             |
 | **Binary File I/O**             | `fread` / `fwrite` for structured `Account` and `Transaction` binary records        |
 | **`rename()` syscall**          | Atomic database writes — crash-safe, eliminates all partial file state corruption   |
@@ -302,20 +302,20 @@ BankingSystem/
 
 ### Complete Security Controls Matrix
 
-| Security Control               | Status          | Implementation Detail                                                  |
-|:-------------------------------|:---------------:|:-----------------------------------------------------------------------|
-| PIN plaintext storage          | ✅ **Never**    | Stretch-hashed + salted; `memset` clears raw PIN buffer immediately    |
-| Rainbow table resistance       | ✅ **Active**   | Unique 16-char random salt generated per account at creation time      |
-| Brute-force resistance         | ✅ **Active**   | Hard lock after 3 failed attempts; CRITICAL audit entry written        |
-| Session hijacking              | ✅ **Mitigated**| 32-char random hex token + 15-minute inactivity auto-expiry            |
-| Privilege escalation           | ✅ **Prevented**| `is_admin` flag verified + PIN re-auth required on every sensitive op  |
-| File tampering detection       | ✅ **Active**   | DB header checksum + individual record checksum verified on every load |
-| Crash-safe persistence         | ✅ **Active**   | Write to `.tmp` → atomic `rename()` → `.dat`; no partial states        |
-| Input injection                | ✅ **Sanitized**| All input: length-clamped, control-chars stripped, type-validated      |
-| Trivial PIN rejection          | ✅ **Enforced** | 15-entry blocklist checked at registration and every PIN change         |
-| Audit evasion                  | ✅ **Impossible**| Every sensitive function writes audit entry before returning           |
-| Admin account deletion         | ✅ **Blocked**  | `is_admin` flag check prevents self-deletion or admin account removal  |
-| Transfer to self               | ✅ **Blocked**  | Explicit `from_id == to_id` check rejected before any processing       |
+| Security Control               | Status            | Implementation Detail                                                   |
+|:-------------------------------|:-----------------:|:------------------------------------------------------------------------|
+| PIN plaintext storage          | ✅ **Never**     | Stretch-hashed + salted; `memset` clears raw PIN buffer immediately     |
+| Rainbow table resistance       | ✅ **Active**    | Unique 16-char random salt generated per account at creation time       |
+| Brute-force resistance         | ✅ **Active**    | Hard lock after 3 failed attempts; CRITICAL audit entry written         |
+| Session hijacking              | ✅ **Mitigated** | 32-char random hex token + 15-minute inactivity auto-expiry             |
+| Privilege escalation           | ✅ **Prevented** | `is_admin` flag verified + PIN re-auth required on every sensitive op   |
+| File tampering detection       | ✅ **Active**    | DB header checksum + individual record checksum verified on every load  |
+| Crash-safe persistence         | ✅ **Active**    | Write to `.tmp` → atomic `rename()` → `.dat`; no partial states         |
+| Input injection                | ✅ **Sanitized** | All input: length-clamped, control-chars stripped, type-validated       |
+| Trivial PIN rejection          | ✅ **Enforced**  | 15-entry blocklist checked at registration and every PIN change         |
+| Audit evasion                  | ✅ **Impossible**| Every sensitive function writes audit entry before returning            |
+| Admin account deletion         | ✅ **Blocked**   | `is_admin` flag check prevents self-deletion or admin account removal   |
+| Transfer to self               | ✅ **Blocked**   | Explicit `from_id == to_id` check rejected before any processing        |
 
 ---
 
@@ -329,7 +329,7 @@ BankingSystem/
 
 ```
   ╔══════════════════════════════════════════════════════╗
-  ║         SECURBANK — CORE BANKING SYSTEM v1.0        ║
+  ║         SECURBANK — CORE BANKING SYSTEM v1.0         ║
   ║      Bank-Grade Financial Management Platform        ║
   ╚══════════════════════════════════════════════════════╝
 
@@ -351,7 +351,7 @@ BankingSystem/
 
 ```
   ╔══════════════════════════════════════════════════════╗
-  ║         SECURBANK — CORE BANKING SYSTEM v1.0        ║
+  ║         SECURBANK — CORE BANKING SYSTEM v1.0         ║
   ╚══════════════════════════════════════════════════════╝
 
   ┌─────────────────────────────────────────────────────┐
@@ -489,7 +489,7 @@ BankingSystem/
 
 ```
   ┌─────────────────────────────────────────────────────┐
-  │  MINI STATEMENT — LAST 10 TRANSACTIONS             │
+  │  MINI STATEMENT — LAST 10 TRANSACTIONS              │
   └─────────────────────────────────────────────────────┘
 
   TXN ID              Date         Type       Status     Amount (INR)   Note
@@ -790,12 +790,12 @@ grep "ADMIN001" data/audit.log
 
 ### v3.0 — Conceptual
 
-| Feature                      | Description                                                             |
-|:-----------------------------|:------------------------------------------------------------------------|
-| **Microservice Decomposition** | Auth, account, and transaction modules as independent networked services|
-| **HSM Simulation**           | Hardware Security Module emulation for cryptographic key lifecycle      |
-| **Blockchain Audit Trail**   | Hash-chained immutable log; each entry references the previous hash     |
-| **Mobile Frontend**          | React Native app communicating with the v2.0 REST API over HTTPS        |
+| Feature                        | Description                                                               |
+|:-------------------------------|:--------------------------------------------------------------------------|
+| **Microservice Decomposition** | Auth, account, and transaction modules as independent networked services  |
+| **HSM Simulation**             | Hardware Security Module emulation for cryptographic key lifecycle        |
+| **Blockchain Audit Trail**     | Hash-chained immutable log; each entry references the previous hash       |
+| **Mobile Frontend**            | React Native app communicating with the v2.0 REST API over HTTPS          |
 
 ---
 
@@ -823,14 +823,14 @@ git push origin feature/your-feature-name
 
 **Code Standards:**
 
-| Requirement                | Detail                                                              |
-|:---------------------------|:--------------------------------------------------------------------|
-| Language standard          | C99 compliant, POSIX-compatible                                     |
-| Warning discipline         | Zero warnings under `-Wall -Wextra -Wpedantic -Wformat=2`           |
-| Header discipline          | Every public function declared in its module's `.h` file            |
-| Audit discipline           | Every security-sensitive op writes an audit entry before returning  |
-| Build requirement          | `make clean && make` must succeed with zero errors after your change|
-| Dependency policy          | No external libraries — C standard library only                     |
+| Requirement                | Detail                                                                |
+|:---------------------------|:----------------------------------------------------------------------|
+| Language standard          | C99 compliant, POSIX-compatible                                       |
+| Warning discipline         | Zero warnings under `-Wall -Wextra -Wpedantic -Wformat=2`             |
+| Header discipline          | Every public function declared in its module's `.h` file              |
+| Audit discipline           | Every security-sensitive op writes an audit entry before returning    |
+| Build requirement          | `make clean && make` must succeed with zero errors after your change  |
+| Dependency policy          | No external libraries — C standard library only                       |
 
 ---
 
