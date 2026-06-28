@@ -545,9 +545,9 @@ Cindhe Sai Mukesh Rao
 
 *Systems Engineer · Fintech Backend Developer*
 
-[![GitHub](https://img.shields.io/badge/GitHub-@yourusername-black?style=flat-square&logo=github)](https://github.com/yourusername)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/yourprofile)
-[![Email](https://img.shields.io/badge/Email-Contact-red?style=flat-square&logo=gmail)](mailto:you@example.com)
+[![GitHub](https://img.shields.io/badge/GitHub-@yourusername-black?style=flat-square&logo=github)](https://github.com/CindheSai)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/cindhe-sai-mukesh-rao-9a57a53ba/)
+[![Email](https://img.shields.io/badge/Email-Contact-red?style=flat-square&logo=gmail)](saimukeshraocindhe@gmail.com)
 
 *Built with precision. Engineered for reliability.*
 
